@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-var passport = require('passport');
+
 
 //extracting postRegister function from '/controllers/index'
       // const indexObj = require ('../controllers/index');
       // const postRegister = indexObj.postRegister
 // destructuring
-const {postRegister} = require('../controllers/index');
+const {postRegister, postLogin, getLogout} = require('../controllers/index');
 const {errorHandler} = require('../middleware/index');
 
 /* GET home page. */
@@ -30,16 +30,10 @@ router.get('/login', (req, res, next) => {
 });
 
 // POST /login
-router.post('/login', passport.authenticate('local', {
-    successRedirect : '/',
-    failureRedirect : '/login'
-}));
+router.post('/login', postLogin);
 
 // GET /logout
-router.get('/logout', (req, res, next) => {
-  res.logout();
-  res.redirect('/');
-});
+router.get('/logout', getLogout);
 
 // GET /profile
 router.get('/profile', (req, res, next) => {
