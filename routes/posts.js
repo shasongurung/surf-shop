@@ -1,21 +1,17 @@
 const express = require('express');
 const router = express.Router();
+const {errorHandler} = require ('../middleware/index');
+const {getPosts, newPost, createPost, editPost} = require ('../controllers/posts');
 
 /* GET posts INDEX /posts */
 // => function ES6
-router.get('/', (req, res, next) => {
-  res.send('/posts');
-});
+router.get('/', errorHandler(getPosts));
 
 /* GET posts NEW /posts/new */
-router.get('/new', (req, res, next) => {
-    res.send('/posts/new');
-  }); 
+router.get('/new', newPost); 
 
 /* POST posts CREATE /posts */
-router.post('/', (req, res, next) => {
-    res.send('CREATE /posts');
-  });
+router.post('/', errorHandler(createPost));
 
 /* GET posts SHOW /posts/:id */
 router.get('/:id', (req, res, next) => {
@@ -23,9 +19,7 @@ router.get('/:id', (req, res, next) => {
   });
 
 /* GET posts EDIT /posts/:id/edit */
-router.get('/:id/edit', (req, res, next) => {
-    res.send('/posts/:id/edit');
-  });
+router.get('/:id/edit', editPost);
 
 /* PUT posts UPDATE /posts/:id */
 router.put('/:id', (req, res, next) => {
