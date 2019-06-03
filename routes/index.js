@@ -7,7 +7,7 @@ const router = express.Router();
       // const postRegister = indexObj.postRegister
 // destructuring
 const {postRegister, postLogin, getLogout} = require('../controllers/index');
-const {errorHandler} = require('../middleware/index');
+const {asyncErrorHandler} = require('../middleware/index');
 
 /* GET home page. */
 // => function ES6
@@ -22,7 +22,7 @@ router.get('/register', (req, res, next) => {
 
 // POST /register
 // postRegister calls postRegister function from 'controllers/index'
-router.post('/register', errorHandler(postRegister));
+router.post('/register', asyncErrorHandler(postRegister));
 
 // GET /login
 router.get('/login', (req, res, next) => {
