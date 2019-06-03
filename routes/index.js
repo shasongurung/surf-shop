@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
-//extracting postRegister function from '/controllers
+var passport = require('passport');
+
+//extracting postRegister function from '/controllers/index'
       // const indexObj = require ('../controllers/index');
       // const postRegister = indexObj.postRegister
 // destructuring
 const {postRegister} = require('../controllers/index');
+const {errorHandler} = require('../middleware/index');
 
 /* GET home page. */
 // => function ES6
@@ -18,9 +21,8 @@ router.get('/register', (req, res, next) => {
 });
 
 // POST /register
-router.post('/register', (req, res, next) => {
-  res.send('register');
-});
+// postRegister calls postRegister function from 'controllers/index'
+router.post('/register', errorHandler (postRegister));
 
 // GET /login
 router.get('/login', (req, res, next) => {
@@ -28,14 +30,22 @@ router.get('/login', (req, res, next) => {
 });
 
 // POST /login
-router.post('/login', (req, res, next) => {
-  res.send('login');
+router.post('/login', passport.authenticate('local', {
+    successRedirect : '/',
+    failureRedirect : '/login'
+}));
+
+// GET /logout
+router.get('/logout', (req, res, next) => {
+  res.logout();
+  res.redirect('/');
 });
 
 // GET /profile
 router.get('/profile', (req, res, next) => {
   res.send('profile');
 });
+
 
 // PUT /profile/:user_id
 router.put('/profile/:user_id', (req, res, next) => {
