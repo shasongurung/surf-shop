@@ -5,13 +5,29 @@ const path = require('path');
 const favicon = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const passport = require ('passport');
+// const passportLocalMongoose = require('passport-local-mongoose');
 const logger = require('morgan');
+const User = require('./models/user');
+const session = require ('express-session');
+const mongoose = require('mongoose');
 
+//Require routes
 const indexRouter = require('./routes/index');
 const postsRouter = require('./routes/posts');
 const reviewsRouter = require('./routes/reviews');
 
 const app = express();
+
+// connect to the database
+  //mongoose.connect('mongodb://localhost:27017/surf-shop');
+mongoose.connect('mongodb://localhost:27017/surf-shop', {useNewUrlParser: true, useCreateIndex : true }).then(()=>{
+    console.log("Connected to DB");
+  }).catch(err => {
+    console.log("Error", err.message);
+  });
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,6 +39,21 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//Configure Sessions and Passport
+// Session comes befoe pasport, keep in mind the order
+app.use(session({
+  secret: 'developer is good',
+  resave: false,
+  saveUninitialized: true
+}));
+
+passport.use(User.createStrategy());
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+
+// Mount routes
 app.use('/', indexRouter);
 app.use('/posts', postsRouter);
 app.use('/posts/:id/reviews', reviewsRouter);

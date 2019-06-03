@@ -1,5 +1,10 @@
 const express = require('express');
 const router = express.Router();
+//extracting postRegister function from '/controllers
+      // const indexObj = require ('../controllers/index');
+      // const postRegister = indexObj.postRegister
+// destructuring
+const {postRegister} = require('../controllers/index');
 
 /* GET home page. */
 // => function ES6
