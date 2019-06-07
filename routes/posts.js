@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const multer = require ('multer');
+const upload = multer({'dest': 'uploads/'});
 const {asyncErrorHandler} = require ('../middleware/index');
 const {postIndex, postNew, postCreate, postShow, postEdit, postUpdate, postDestroy} = require ('../controllers/posts');
 
@@ -11,7 +13,8 @@ router.get('/', asyncErrorHandler(postIndex));
 router.get('/new', postNew); 
 
 /* POST posts CREATE /posts */
-router.post('/', asyncErrorHandler(postCreate));
+// 4 denotes no. images one can upload
+router.post('/', upload.array('images', 4), asyncErrorHandler(postCreate));
 
 /* GET posts SHOW /posts/:id */
 router.get('/:id', asyncErrorHandler(postShow));
