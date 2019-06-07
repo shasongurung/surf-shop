@@ -45,12 +45,57 @@ module.exports={
     },
     // Post update
     async postUpdate(req, res, next){
-        let post = await Post.findByIdAndUpdate(req.params.id, req.body.post);
+        //find the post by id
+        let post = await Post.findById(req.params.id);
+        // check if there's any images for deletions
+        if (req.body.deleteImages && req.body.deleteImages.length){
+            // assign deleteimage from req.body to its own variable
+            let deleteImages = req.body.deleteImages;
+            //loop over deleteImages
+            for (const public_id of deleteImages){
+                // del images from cloudinary
+                await cloudinary.v2.uploader.destroy(public_id);
+                // del image form post.images
+                for (const image of post.images){
+                    if(image.public_id === public_id){
+                        // get index of image fron post.images (post model)
+                        // images is contains an array of image
+                        let index= post.images.indexOf(image);
+                        // now remove the image from the array using index
+                        post.images.splice(index,1);
+                    }
+                }
+            }
+        }
+        // check if any new images for upload
+        if (req.files){
+            //upload images
+            for(const file of req.files){
+                let image = await cloudinary.v2.uploader.upload(file.path);
+                // add images to post.images array
+                post.images.push({
+                    url: image.secure_url,
+                    public_id : image.public_id
+                });
+            }
+        }
+        //update the post with new any new properties
+        post.title = req.body.post.title;
+        post.description = req.body.post.description;
+        post.price = req.body.post.price;
+        post.location = req.body.post.location;
+        //save the updated post into the db
+        post.save();
+        //redirect to show page
         res.redirect(`/posts/${post.id}`);
     },
     // Post Destroy
     async postDestroy(req,res,next){
-        await Post.findByIdAndRemove(req.params.id);
+        let post = await Post.findById(req.params.id);
+        for (const image of post.images){
+            await cloudinary.v2.uploader.destroy(image.public_id);
+        }
+        await post.remove();
         res.redirect('/posts');
     }
 

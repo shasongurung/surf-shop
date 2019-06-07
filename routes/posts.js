@@ -13,7 +13,9 @@ router.get('/', asyncErrorHandler(postIndex));
 router.get('/new', postNew); 
 
 /* POST posts CREATE /posts */
+//upload (multer) middlewar
 // 4 denotes no. images one can upload
+// upload.array will create an array of files - 'files', which can be accessed later via req.files
 router.post('/', upload.array('images', 4), asyncErrorHandler(postCreate));
 
 /* GET posts SHOW /posts/:id */
@@ -23,7 +25,10 @@ router.get('/:id', asyncErrorHandler(postShow));
 router.get('/:id/edit', asyncErrorHandler(postEdit));
 
 /* PUT posts UPDATE /posts/:id */
-router.put('/:id', asyncErrorHandler(postUpdate));
+//upload (multer) middleware
+// 4 denotes no. images one can upload
+// upload.array will create an array of files - 'files', which can be accessed later via req.files
+router.put('/:id', upload.array('images', 4), asyncErrorHandler(postUpdate));
 
 /* DELETE posts DESTROY /posts/:id */
 router.delete('/:id',asyncErrorHandler(postDestroy));

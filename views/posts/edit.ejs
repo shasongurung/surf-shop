@@ -1,9 +1,43 @@
 <h1> Edit post </h1>
-<form action="/posts/<%= post.id%>?_method=PUT" method="POST">
+<form action="/posts/<%= post.id%>?_method=PUT" method="POST" id="postEditForm" enctype="multipart/form-data">
     <div><input name= "post[title]" type="text" value="<%= post.title %>"></div>
     <div><input name = "post[price]" type="text" value="<%= post.price %>"></div>
+    <div>
+        <input type="file" id ="imageUpload" accept="images/*" name="images" multiple />
+        <div>
+            <% post.images.forEach((image, i)=>{ %>
+                <img src="<%= image.url %>" alt="Surf broad image" width="100px">
+                <label for="image<%= i %>">Delete?</label>
+                <input name = "deleteImages[]" type="checkbox" class="imageDeleteCheckbox" id="image<%= i %>" value="<%=image.public_id %>">
+            <%}); %>
+        </div>
+    </div>
     <div><textarea name ="post[description]"><%= post.description %></textarea></div>
     <div><input name = "post[location]" type="text" value="<%= post.location %>"></div>
     <div><input type="submit"></div>
 
 </form>
+
+<script>
+    // find the post edit form
+    let postEditForm = document.getElementById('postEditForm');
+    // and submit listener post edit form
+    postEditForm.addEventListener('submit',(event)=>{
+        // find the length of uploaded images
+        let imageUploads = document.getElementById('imageUpload').files.length;
+        // find the total no. of existing images
+        let existingImgs = document.querySelectorAll('.imageDeleteCheckbox').length;
+        //find the total no. of potential deletions
+        let imageDeletions = document.querySelectorAll('.imageDeleteCheckbox:checked').length;
+        // figure out if the form can be submitted or not
+        let newTotal = existingImgs - imageDeletions+ imageUploads;
+        if (newTotal > 4){
+            // prevent form from submitting
+            event.preventDefault();
+            // calculate removal amount
+            let removalAmt = newTotal - 4;
+            // alert user of their error
+            alert(`You need to remove at least ${removalAmt} (more) image${removalAmt === 1 ? '' : 's'}!`);
+        }
+    });
+</script>
