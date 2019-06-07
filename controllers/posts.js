@@ -11,7 +11,7 @@ module.exports={
     // Posts Index
     async postIndex(req,res,next){
         let posts = await Post.find({});
-        res.render('posts/index', {posts});
+        res.render('posts/index', {posts, title: 'Posts Index'});
     },
     // Posts New
     postNew (req, res, next){
@@ -40,6 +40,7 @@ module.exports={
 
         // use req.body to create a new post
         let post = await Post.create(req.body.post);
+        req.session.success = 'Post created successfully';
         //`backtick` template literal
         res.redirect(`/posts/${post.id}`);
     },
@@ -105,13 +106,14 @@ module.exports={
             .send();
             // assign coordinates the response received
             post.coordinates = response.body.features[0].geometry.coordinates
+            post.location = req.body.post.location;
         }
 
         //update the post with new any new properties
         post.title = req.body.post.title;
         post.description = req.body.post.description;
         post.price = req.body.post.price;
-        post.location = req.body.post.location;
+
         //save the updated post into the db
         post.save();
         //redirect to show page
