@@ -22,7 +22,7 @@ const app = express();
 
 // connect to the database
   //mongoose.connect('mongodb://localhost:27017/surf-shop');
-mongoose.connect('mongodb://localhost:27017/surf-shop', {useNewUrlParser: true, useCreateIndex : true }).then(()=>{
+mongoose.connect('mongodb://localhost:27017/surf-shop-mapbox', {useNewUrlParser: true, useCreateIndex : true }).then(()=>{
     console.log("Connected to DB");
   }).catch(err => {
     console.log("Error", err.message);
@@ -33,6 +33,9 @@ mongoose.connect('mongodb://localhost:27017/surf-shop', {useNewUrlParser: true, 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+//setup public assests directory
+app.use(express.static('public'));
 
 app.use(logger('dev'));
 app.use(bodyParser.json());

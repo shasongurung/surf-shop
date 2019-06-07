@@ -1,4 +1,6 @@
 const Post = require ('../models/post');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const geocodingClient = mbxGeocoding({accessToken : process.env.MAPBOX_TOKEN});
 const cloudinary = require ('cloudinary');
 cloudinary.config({
     cloud_name: 'shasongurung',
@@ -25,6 +27,17 @@ module.exports={
                 public_id : image.public_id
             });
         }
+        // get location coordinates as response
+        let response = await geocodingClient
+            .forwardGeocode({
+                // passing location as query
+                query: req.body.post.location,
+                limit: 1
+            })
+            .send();
+        // assign coordinates the response received
+        req.body.post.coordinates = response.body.features[0].geometry.coordinates
+
         // use req.body to create a new post
         let post = await Post.create(req.body.post);
         //`backtick` template literal
@@ -79,6 +92,21 @@ module.exports={
                 });
             }
         }
+
+        // check change in location. if yes, get new coordinates using location value
+        if (post.location!==req.body.post.location){
+            // get location coordinates as response
+            let response = await geocodingClient
+            .forwardGeocode({
+                // passing location as query
+                query: req.body.post.location,
+                limit: 1
+            })
+            .send();
+            // assign coordinates the response received
+            post.coordinates = response.body.features[0].geometry.coordinates
+        }
+
         //update the post with new any new properties
         post.title = req.body.post.title;
         post.description = req.body.post.description;
