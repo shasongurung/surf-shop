@@ -20,3 +20,21 @@ new mapboxgl.Marker(el)
 .setHTML('<h3>' + post.title + '</h3><p>' + post.location + '</p>'))
 .addTo(map);
     
+// toggled edit review form
+$('.toggle-edit-form').on('click',function() {
+    //toggle the edit btn txt on click
+    // this represent thed edit button (what was clicked)
+    // if (this.text ==== 'Edit') then change text to 'Cancel' or keep it as Edit
+    $(this).text()==='Edit' ? $(this).text('Cancel') : $(this).text('Edit');
+    // toggle visibility of the edit reviw form
+    // select the form closest to the edit button clicked 
+    // only the localised form
+    $(this).siblings('.edit-review-form').toggle();
+
+});
+
+//  Add click listener for clering of rating from edit/new form
+$('.clear-rating').click(function(){
+    $(this).siblings('.input-no-rate').click();
+});
+

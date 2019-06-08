@@ -1,41 +1,17 @@
 const express = require('express');
 //allows an access to the ids (in this case from '/posts/:id/reviews')
 const router = express.Router({mergeParams: true});
-
-/* GET reviews INDEX  /posts/:id/reviews */
-router.get('/', (req, res, next) => {
-  res.send('INDEX');
-});
-
-// /* GET reviews NEW  /posts/:id/reviews/new */
-// router.get('/new', (req, res, next) => {
-//     res.send('NEW');
-//   }); 
+const {asyncErrorHandler, isReviewAuthor} = require ('../middleware');
+const {reviewCreate, reviewUpdate, reviewDestroy} = require('../controllers/reviews');
 
 /* POST reviews CREATE  /posts/:id/reviews */
-router.post('/', (req, res, next) => {
-    res.send('CREATE');
-  });
-
-// /* GET reviews SHOW  /posts/:id/reviews/review_id */
-// router.get('/:review_id', (req, res, next) => {
-//     res.send('SHOW');
-//   });
-
-/* GET reviews EDIT  /posts/:id/reviews/review_id/edit */
-router.get('/:review_id/edit', (req, res, next) => {
-    res.send('EDIT');
-  });
+router.post('/', asyncErrorHandler(reviewCreate));
 
 /* PUT reviews UPDATE  /posts/:id/reviews/review_id */
-router.put('/:review_id', (req, res, next) => {
-    res.send('UPDATE');
-  });
+router.put('/:review_id', isReviewAuthor, asyncErrorHandler(reviewUpdate));
 
 /* DELETE reviews DESTROY  /posts/:id/reviews/review_id */
-router.delete('/:review_id', (req, res, next) => {
-    res.send('DESTROY');
-  });
+router.delete('/:review_id',isReviewAuthor, asyncErrorHandler(reviewDestroy));
 
 module.exports = router;
 
