@@ -15,7 +15,7 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const seedPosts = require('./seeds');
 
-seedPosts();
+// seedPosts();
 
 //Require routes
 const indexRouter = require('./routes/index');

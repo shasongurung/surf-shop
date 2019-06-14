@@ -6,14 +6,13 @@ const router = express.Router();
       // const indexObj = require ('../controllers/index');
       // const postRegister = indexObj.postRegister
 // destructuring
-const {postRegister, postLogin, getLogout} = require('../controllers/index');
+const {landingPage, postRegister, postLogin, getLogout,} = require('../controllers/index');
 const {asyncErrorHandler} = require('../middleware/index');
 
-/* GET home page. */
+
+/* GET home/landing page. */
 // => function ES6
-router.get('/', (req, res, next) => {
-  res.render('index', { title: 'Sur Shop - Home' });
-});
+router.get('/', asyncErrorHandler(landingPage));
 
 // GET /register
 router.get('/register', (req, res, next) => {

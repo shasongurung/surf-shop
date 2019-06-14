@@ -15,11 +15,15 @@ module.exports={
         // options for pagniate method (page : query or by default 1st page) & limit: no of results
         let posts = await Post.paginate({}, {
             page: req.query.page || 1,
-            limit: 10
+            limit: 10,
+            // descending order by creation date
+            sort: '-_id'
         });
         // ensuring number type
         posts.page = Number(posts.page);
-        res.render('posts/index', {posts, title: 'Posts Index'});
+        res.render('posts/index', {
+            posts, mapBoxToken : process.env.MAPBOX_TOKEN, title: 'Posts Index'
+        });
     },
     // Posts New
     postNew (req, res, next){
@@ -35,7 +39,7 @@ module.exports={
                 public_id : image.public_id
             });
         }
-        // get location coordinates as response
+        // get location geometry as response
         let response = await geocodingClient
             .forwardGeocode({
                 // passing location as query
@@ -43,11 +47,16 @@ module.exports={
                 limit: 1
             })
             .send();
-        // assign coordinates the response received
-        req.body.post.coordinates = response.body.features[0].geometry.coordinates
+        // assign geometry the response received
+        req.body.post.geometry = response.body.features[0].geometry;
+        
+        // instantiate new post with req.body.post
+        // add Post-properties-description value
+        // then save the post now
+        let post = new Post(req.body.post);
+		post.properties.description = `<strong><a href="/posts/${post._id}">${post.title}</a></strong><p>${post.location}</p><p>${post.description.substring(0, 20)}...</p>`;
+        await post.save();
 
-        // use req.body to create a new post
-        let post = await Post.create(req.body.post);
         req.session.success = 'Post created successfully';
         //`backtick` template literal
         res.redirect(`/posts/${post.id}`);
@@ -123,7 +132,7 @@ module.exports={
             })
             .send();
             // assign coordinates the response received
-            post.coordinates = response.body.features[0].geometry.coordinates
+            post.geometry.coordinates = response.body.features[0].geometry;
             post.location = req.body.post.location;
         }
 
@@ -131,6 +140,8 @@ module.exports={
         post.title = req.body.post.title;
         post.description = req.body.post.description;
         post.price = req.body.post.price;
+
+        post.properties.description = `<strong><a href="/posts/${post._id}">${post.title}</a></strong><p>${post.location}</p><p>${post.description.substring(0, 20)}...</p>`;
 
         //save the updated post into the db
         post.save();
