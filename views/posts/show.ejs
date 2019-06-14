@@ -4,6 +4,22 @@
 <div> Price <%= post.price %></div>
 <div> Descriptions <%= post.description %></div>
 <div> Location <%= post.location %></div>
+<div>
+    <% for(let i=0; i<5; i++) {%>
+        <% if(i < floorRating) { %>
+            <!-- display a full star -->
+            <i class="fas fa-star"></i>
+            <% } else if((post.avgRating - i) > 0 && (post.avgRating - i) < 1) { %>
+            <!-- display a half star -->
+            <i class="fas fa-star-half-alt"></i>
+            <% } else { %>
+            <!-- display an empty star -->
+            <i class="far fa-star"></i>
+        <% } %>
+    <%}%>
+    <!-- if 1 then no 's' after star else add 's' -->
+    <%= `${post.avgRating} star${post.avgRating === 1 ? '' : 's'}` %>
+</div>
 <div> 
     <% post.images.forEach((image)=>{ %>
         <img src="<%= image.url %>" alt="Surf broad image" width="200px">

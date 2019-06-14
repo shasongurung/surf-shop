@@ -63,7 +63,9 @@ module.exports={
                 path: 'author',
                 model: 'User'}
         });
-        res.render('posts/show', {post});
+        // get floorRating from post schema method
+        const floorRating = post.calculateAvgRating();
+        res.render('posts/show', {post, floorRating});
     },
     // Posts edit
     async postEdit(req, res, next){
