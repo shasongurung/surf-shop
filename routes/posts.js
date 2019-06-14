@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const multer = require ('multer');
-const upload = multer({'dest': 'uploads/'});
+// upload locally
+// const upload = multer({'dest': 'uploads/'});
+const {cloudinary, storage} = require('../cloudinary/index');
+const upload = multer({storage});
 const {asyncErrorHandler} = require ('../middleware/index');
 const {postIndex, postNew, postCreate, postShow, postEdit, postUpdate, postDestroy} = require ('../controllers/posts');
 

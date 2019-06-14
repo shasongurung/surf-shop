@@ -5,6 +5,7 @@ var map = new mapboxgl.Map({
     zoom: 3.3
 });
 
+//search  capability on map
 map.addControl(new MapboxGeocoder({
     accessToken: mapboxgl.accessToken
 }));
@@ -12,8 +13,10 @@ map.addControl(new MapboxGeocoder({
 map.on('load', function() {
     // Add a new source from our GeoJSON data and set the
     // 'cluster' option to true. GL-JS will add the point_count property to your source data.
+    //source "posts" is created
     map.addSource("posts", {
         type: "geojson",
+        //var posts declared on index.ejs and posts/index.ejs
         data: posts,
         cluster: true,
         clusterMaxZoom: 14, // Max zoom to cluster points on
@@ -78,6 +81,9 @@ map.on('load', function() {
     });
 
     map.on('click', 'unclustered-point', function(e) {
+    //Post.geometry.coordinate
+    //Post.properties.description
+
       var coordinates = e.features[0].geometry.coordinates.slice();
       var description = e.features[0].properties.description;
 
