@@ -1,69 +1,61 @@
 const express = require('express');
 const router = express.Router();
 
-
 //extracting postRegister function from '/controllers/index'
-      // const indexObj = require ('../controllers/index');
-      // const postRegister = indexObj.postRegister
+// const indexObj = require ('../controllers/index');
+// const postRegister = indexObj.postRegister
 // destructuring
-const {landingPage, postRegister, postLogin, getLogout,} = require('../controllers/index');
-const {asyncErrorHandler} = require('../middleware/index');
-
+const { landingPage, getRegister, postRegister, getLogin, postLogin, getLogout } = require('../controllers/index');
+const { asyncErrorHandler } = require('../middleware/index');
 
 /* GET home/landing page. */
 // => function ES6
 router.get('/', asyncErrorHandler(landingPage));
 
 // GET /register
-router.get('/register', (req, res, next) => {
-  res.send('register');
-});
+router.get('/register', getRegister);
 
 // POST /register
 // postRegister calls postRegister function from 'controllers/index'
 router.post('/register', asyncErrorHandler(postRegister));
 
 // GET /login
-router.get('/login', (req, res, next) => {
-  res.send('login');
-});
+router.get('/login', getLogin);
 
 // POST /login
-router.post('/login', postLogin);
+router.post('/login', asyncErrorHandler(postLogin));
 
 // GET /logout
 router.get('/logout', getLogout);
 
 // GET /profile
 router.get('/profile', (req, res, next) => {
-  res.send('profile');
+	res.send('profile');
 });
-
 
 // PUT /profile/:user_id
 router.put('/profile/:user_id', (req, res, next) => {
-  res.send('profile');
+	res.send('profile');
 });
 
 // GET /forgot password
 router.get('/forgot-pw', (req, res, next) => {
-  res.send('forgot-pw');
+	res.send('forgot-pw');
 });
 
 // PUT /forgot password
 router.put('/forgot-pw', (req, res, next) => {
-  res.send('forgot-pw');
+	res.send('forgot-pw');
 });
 
 // GET /Reset password
 router.get('/reset-pw/:token', (req, res, next) => {
-  res.send('reset-pw');
+	res.send('reset-pw');
 });
 
 // PUT /Reset password
 router.put('/reset-pw/:token', (req, res, next) => {
-  res.send('reset-pw');
+	res.send('reset-pw');
 });
-
 
 module.exports = router;

@@ -1,20 +1,19 @@
 const express = require('express');
 //allows an access to the ids (in this case from '/posts/:id/reviews')
-const router = express.Router({mergeParams: true});
-const {asyncErrorHandler, isReviewAuthor} = require ('../middleware');
-const {reviewCreate, reviewUpdate, reviewDestroy} = require('../controllers/reviews');
+const router = express.Router({ mergeParams: true });
+const { asyncErrorHandler, isLoggedIn, isReviewAuthor } = require('../middleware');
+const { reviewCreate, reviewUpdate, reviewDestroy } = require('../controllers/reviews');
 
 /* POST reviews CREATE  /posts/:id/reviews */
-router.post('/', asyncErrorHandler(reviewCreate));
+router.post('/', isLoggedIn, asyncErrorHandler(reviewCreate));
 
 /* PUT reviews UPDATE  /posts/:id/reviews/review_id */
-router.put('/:review_id', isReviewAuthor, asyncErrorHandler(reviewUpdate));
+router.put('/:review_id', isLoggedIn, isReviewAuthor, asyncErrorHandler(reviewUpdate));
 
 /* DELETE reviews DESTROY  /posts/:id/reviews/review_id */
-router.delete('/:review_id',isReviewAuthor, asyncErrorHandler(reviewDestroy));
+router.delete('/:review_id', isLoggedIn, isReviewAuthor, asyncErrorHandler(reviewDestroy));
 
 module.exports = router;
-
 
 //RESTFUL ROUTE PATTERNS
 // GET INDEX    -  reviews
