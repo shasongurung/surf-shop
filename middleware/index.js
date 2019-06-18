@@ -29,5 +29,40 @@ module.exports = {
 		}
 		req.session.error = 'Access denied';
 		res.redirect('back');
+	},
+	// check current password when user tries to update their profile
+	isValidPassword: async (req, res, next) => {
+		const { user } = await User.authenticate()(req.user.username, req.body.currentPassword);
+		if (user) {
+			// add user to res.locals
+			res.locals.user = user;
+			next();
+		} else {
+			req.session.error = 'Incorrect current password';
+			return res.redirect('/profile');
+		}
+	},
+	// check wether or not user is trying to change their current password
+	changePassword: async (req, res, next) => {
+		const { newPassword, passwordConfirmation } = req.body;
+		if (newPassword && !passwordConfirmation) {
+			req.session.error = 'Missing password confirmation';
+			return res.redirect('/profile');
+		} else if (newPassword && passwordConfirmation) {
+			const { user } = res.locals;
+			// check wether newPassword and passwordConfirmation are same or not
+			// double checking (as already checked in client side)
+			if (newPassword === passwordConfirmation) {
+				// if all ok then change
+				await user.setPassword(newPassword);
+				next();
+			} else {
+				// if not then flash an error message
+				req.session.error = 'New passwords must match';
+				return res.redirect('/profile');
+			}
+		} else {
+			next();
+		}
 	}
 };

@@ -83,7 +83,7 @@ module.exports = {
 		res.render('posts/show', { post, floorRating });
 	},
 	// Posts edit
-	async postEdit(req, res, next) {
+	postEdit(req, res, next) {
 		// let post = await Post.findById(req.params.id);
 		// res.render('posts/edit', { post });
 
@@ -159,7 +159,9 @@ module.exports = {
 		)}...</p>`;
 
 		//save the updated post into the db
-		post.save();
+		// using await to ensure the newly creted post is saved and
+		// correct data is rendered after the redirection
+		await post.save();
 		//redirect to show page
 		res.redirect(`/posts/${post.id}`);
 	},

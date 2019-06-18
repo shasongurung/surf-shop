@@ -1,7 +1,8 @@
 const passport = require('passport');
 const User = require('../models/user');
 const Post = require('../models/post');
-
+// comes with newer node
+const util = require('util');
 module.exports = {
 	// GET
 	async landingPage(req, res, next) {
@@ -42,6 +43,9 @@ module.exports = {
 		// isAuthenticated is function from passport
 		// if user is already logged in and tries accessing the/login route
 		if (req.isAuthenticated()) return res.redirect('/');
+		// check if returnTo exist i.e. where the login request came from
+		// if yes assign redirectTo with the value of where the user came from
+		if (req.query.returnTo) req.session.redirectTo = req.headers.referer;
 		res.render('login', { title: 'Login' });
 	},
 	async postLogin(req, res, next) {
@@ -64,5 +68,30 @@ module.exports = {
 		req.session.success = 'Logged out successfully';
 		req.logout();
 		res.redirect('/');
+	},
+	async getProfile(req, res, next) {
+		//comparing author -object id with current logged in user Id
+		const posts = await Post.find().where('author').equals(req.user._id).limit(10).exec();
+		res.render('profile', { posts });
+	},
+	async updateProfile(req, res, next) {
+		// get email and username
+		const { email, username } = req.body;
+		// destructe user available in res.locals
+		const { user } = res.locals;
+		// now prep value for username and email
+		if (username) user.username = username;
+		if (email) user.email = email;
+		// now save the profile
+		await user.save();
+		// as user credentials has been updated
+		// get updated credentials
+		const login = util.promisify(req.login.bind(req));
+		// use the updated credentials
+		await login(user);
+		// flash success msg
+		req.session.success = 'Profile successfully updated';
+		// redirect
+		res.redirect('/profile');
 	}
 };

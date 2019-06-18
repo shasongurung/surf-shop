@@ -5,8 +5,17 @@ const router = express.Router();
 // const indexObj = require ('../controllers/index');
 // const postRegister = indexObj.postRegister
 // destructuring
-const { landingPage, getRegister, postRegister, getLogin, postLogin, getLogout } = require('../controllers/index');
-const { asyncErrorHandler } = require('../middleware/index');
+const {
+	landingPage,
+	getRegister,
+	postRegister,
+	getLogin,
+	postLogin,
+	getLogout,
+	getProfile,
+	updateProfile
+} = require('../controllers/index');
+const { asyncErrorHandler, isLoggedIn, isValidPassword, changePassword } = require('../middleware/index');
 
 /* GET home/landing page. */
 // => function ES6
@@ -29,14 +38,16 @@ router.post('/login', asyncErrorHandler(postLogin));
 router.get('/logout', getLogout);
 
 // GET /profile
-router.get('/profile', (req, res, next) => {
-	res.send('profile');
-});
+router.get('/profile', isLoggedIn, asyncErrorHandler(getProfile));
 
 // PUT /profile/:user_id
-router.put('/profile/:user_id', (req, res, next) => {
-	res.send('profile');
-});
+router.put(
+	'/profile/',
+	isLoggedIn,
+	asyncErrorHandler(isValidPassword),
+	asyncErrorHandler(changePassword),
+	asyncErrorHandler(updateProfile)
+);
 
 // GET /forgot password
 router.get('/forgot-pw', (req, res, next) => {
