@@ -3,6 +3,8 @@ const User = require('../models/user');
 const Post = require('../models/post');
 // comes with newer node
 const util = require('util');
+const { cloudinary } = require('../cloudinary');
+const { deleteProfileImage } = require('../middleware');
 module.exports = {
 	// GET
 	async landingPage(req, res, next) {
@@ -22,6 +24,14 @@ module.exports = {
 		// 	image: req.body.image
 		// });
 		try {
+			// check if user uploaded img during registration or not
+			if (req.file) {
+				const { secure_url, public_id } = req.file;
+				req.body.image = {
+					secure_url,
+					public_id
+				};
+			}
 			const user = await User.register(new User(req.body), req.body.password);
 			// try logging in with the newly created credentials
 			req.login(user, (err) => {
@@ -30,6 +40,8 @@ module.exports = {
 				res.redirect('/');
 			});
 		} catch (err) {
+			// if any error occured, delete uploaded image
+			deleteProfileImage(req);
 			const { username, email } = req.body;
 			let error = err.message;
 			if (error.includes('duplicate') && error.includes('index: email_1 dup key')) {
@@ -79,9 +91,16 @@ module.exports = {
 		const { email, username } = req.body;
 		// destructe user available in res.locals
 		const { user } = res.locals;
-		// now prep value for username and email
+		// now prep value for username, email and image
 		if (username) user.username = username;
 		if (email) user.email = email;
+		// if user uploaded new picture, destroy existing first and then assign the new value
+		if (req.file) {
+			if (user.image.public_id) await cloudinary.v2.uploader.destroy(user.image.public_id);
+			const { secure_url, public_id } = req.file;
+			user.image = { secure_url, public_id };
+		}
+		awai;
 		// now save the profile
 		await user.save();
 		// as user credentials has been updated
