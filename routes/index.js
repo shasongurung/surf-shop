@@ -16,7 +16,11 @@ const {
 	postLogin,
 	getLogout,
 	getProfile,
-	updateProfile
+	updateProfile,
+	getForgotPw,
+	putForgotPw,
+	getReset,
+	putReset
 } = require('../controllers/index');
 const { asyncErrorHandler, isLoggedIn, isValidPassword, changePassword } = require('../middleware/index');
 
@@ -25,11 +29,11 @@ const { asyncErrorHandler, isLoggedIn, isValidPassword, changePassword } = requi
 router.get('/', asyncErrorHandler(landingPage));
 
 // GET /register
-router.post('/register', upload.single('image'), asyncErrorHandler(postRegister));
+router.get('/register', asyncErrorHandler(getRegister));
 
 // POST /register
 // postRegister calls postRegister function from 'controllers/index'
-router.post('/register', asyncErrorHandler(postRegister));
+router.post('/register', upload.single('image'), asyncErrorHandler(postRegister));
 
 // GET /login
 router.get('/login', getLogin);
@@ -54,23 +58,15 @@ router.put(
 );
 
 // GET /forgot password
-router.get('/forgot-pw', (req, res, next) => {
-	res.send('forgot-pw');
-});
+router.get('/forgot-password', getForgotPw);
 
 // PUT /forgot password
-router.put('/forgot-pw', (req, res, next) => {
-	res.send('forgot-pw');
-});
+router.put('/forgot-password', asyncErrorHandler(putForgotPw));
 
 // GET /Reset password
-router.get('/reset-pw/:token', (req, res, next) => {
-	res.send('reset-pw');
-});
+router.get('/reset/:token', asyncErrorHandler(getReset));
 
 // PUT /Reset password
-router.put('/reset-pw/:token', (req, res, next) => {
-	res.send('reset-pw');
-});
+router.put('/reset/:token', asyncErrorHandler(putReset));
 
 module.exports = router;
