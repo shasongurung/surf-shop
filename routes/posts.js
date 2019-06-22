@@ -5,12 +5,12 @@ const multer = require('multer');
 // const upload = multer({'dest': 'uploads/'});
 const { storage } = require('../cloudinary/index');
 const upload = multer({ storage });
-const { asyncErrorHandler, isLoggedIn, isAuthor } = require('../middleware/index');
+const { asyncErrorHandler, isLoggedIn, isAuthor, searchAndFilterPosts } = require('../middleware/index');
 const { postIndex, postNew, postCreate, postShow, postEdit, postUpdate, postDestroy } = require('../controllers/posts');
 
 /* GET posts INDEX /posts */
 // => function ES6
-router.get('/', asyncErrorHandler(postIndex));
+router.get('/', asyncErrorHandler(searchAndFilterPosts), asyncErrorHandler(postIndex));
 
 /* GET posts NEW /posts/new */
 router.get('/new', isLoggedIn, postNew);

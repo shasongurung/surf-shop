@@ -65,4 +65,6 @@ PostSchema.methods.calculateAvgRating = function() {
 
 PostSchema.plugin(mongoosePaginate);
 
+PostSchema.index({ geometry: '2dsphere' });
+
 module.exports = mongoose.model('Post', PostSchema);
