@@ -15,7 +15,7 @@ module.exports = {
 	// GET
 	async landingPage(req, res, next) {
 		const posts = await Post.find({});
-		res.render('index', { posts, mapBoxToken: process.env.MAPBOX_TOKEN, title: 'Sur Shop - Home' });
+		res.render('index', { posts, mapBoxToken: process.env.MAPBOX_TOKEN, title: 'Surf Shop - Home' });
 	},
 	// GET / register
 	getRegister(req, res, next) {
