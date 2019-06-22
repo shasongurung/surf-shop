@@ -8,6 +8,7 @@ const { deleteProfileImage } = require('../middleware');
 
 const crypto = require('crypto');
 const sgMail = require('@sendgrid/mail');
+// set API key on sendgridmail (sgMail)
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 module.exports = {
@@ -121,20 +122,31 @@ module.exports = {
 		res.render('users/forgot');
 	},
 	async putForgotPw(req, res, next) {
-		const token = await crypto.randomBytes(20).toString('hex');
+		// look up the user with the given email
+		const { email } = req.body;
+		const user = await User.findOne({ email });
+		// const user = await User.findOne({ email: req.body.email });
 
-		const user = await User.findOne({ email: req.body.email });
+		//validate email
 		if (!user) {
 			req.session.error = 'No account with that email address exists.';
 			return res.redirect('/forgot-password');
 		}
 
+		// create a hex as a token
+		const token = await crypto.randomBytes(20).toString('hex');
+
+		//prep value to be put into the db
 		user.resetPasswordToken = token;
+		// add expires time
 		user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
 
+		//save
 		await user.save();
 
+		// create a message
 		const msg = {
+			// destination ->user email address who requested
 			to: user.email,
 			from: 'Surf Shop Admin <your@email.com>',
 			subject: 'Surf Shop - Forgot Password / Reset',
@@ -144,6 +156,7 @@ module.exports = {
 				If you did not request this, please ignore this email and your password will remain unchanged.`.replace(/				/g, '')
 		};
 
+		// send reset email
 		await sgMail.send(msg);
 
 		req.session.success = `An e-mail has been sent to ${user.email} with further instructions.`;
@@ -151,11 +164,20 @@ module.exports = {
 	},
 	async getReset(req, res, next) {
 		const { token } = req.params;
-		const user = await User.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } });
+		const user = await User.findOne({
+			resetPasswordToken: token,
+			// object syntax
+			// $gt mongo db operator -> greater than
+			// check wether existing token expire is greater than current time
+			resetPasswordExpires: { $gt: Date.now() }
+		});
+		// if no user found or password token expired
+		// flash error msg and redirect
 		if (!user) {
 			req.session.error = 'Password reset token is invalid or has expired.';
 			return res.redirect('/forgot-password');
 		}
+		// if matched then render reset page and pass the token to reset page
 		res.render('users/reset', { token });
 	},
 	async putReset(req, res, next) {
@@ -168,17 +190,25 @@ module.exports = {
 		}
 
 		if (req.body.password === req.body.confirm) {
+			// set new password
 			await user.setPassword(req.body.password);
+			// remove the token and expiry
 			user.resetPasswordToken = null;
 			user.resetPasswordExpires = null;
+			// save the db
 			await user.save();
+
+			// as user credentials has been updated
+			// get updated credentials
 			const login = util.promisify(req.login.bind(req));
+			// use the updated credentials
 			await login(user);
 		} else {
 			req.session.error = 'Passwords do not match.';
 			return res.redirect(`/reset/${token}`);
 		}
 
+		// creat success email message
 		const msg = {
 			to: user.email,
 			from: 'Surf Shop Admin <your@email.com>',
@@ -187,9 +217,9 @@ module.exports = {
 			  This email is to confirm that the password for your account has just been changed.
 			  If you did not make this change, please hit reply and notify us at once.`.replace(/		  	/g, '')
 		};
-
+		// send success email
 		await sgMail.send(msg);
-
+		// flash the sucess messageß
 		req.session.success = 'Password successfully updated!';
 		res.redirect('/');
 	}
