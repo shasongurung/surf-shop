@@ -1,10 +1,19 @@
-body {
-	padding: 50px;
-	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+* {
+	margin: 0px;
+	padding: 0px;
+	box-sizing: border-box;
 }
 
-a {
-	color: #00b7ff;
+body {
+	font-family: 'Raleway', sans-serif;
+}
+
+h1 {
+	font-size: 1.2em;
+	letter-spacing: -1.2px;
+}
+h2 {
+	font-size: 1em;
 }
 
 #map {
@@ -27,4 +36,48 @@ a {
 .profile-image {
 	width: 100px;
 	border-radius: 50%;
+}
+
+header {
+	width: 85%;
+	display: flex;
+	margin: auto;
+	align-items: center;
+}
+
+.logo-container {
+	flex: 0.4;
+	background-color: black;
+}
+
+.logo {
+	padding-top: 40px;
+	color: white;
+	text-align: center;
+}
+
+nav {
+	flex: 3;
+}
+
+header ul {
+	font-size: 13px;
+	list-style: none;
+	display: flex;
+	justify-content: flex-end;
+	text-align: center;
+}
+header li a {
+	text-decoration: none;
+	margin: 0 10px;
+	width: 125px;
+	border: 1px solid black;
+	display: inline-block;
+	color: black;
+}
+
+header li a:hover {
+	color: white;
+	background-color: black;
+	text-decoration: none;
 }
